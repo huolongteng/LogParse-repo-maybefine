@@ -1,1 +1,0 @@
-73	INFO dfs.FSDataset: Deleting block file /mnt/hadoop/dfs/data/current/subdir5/

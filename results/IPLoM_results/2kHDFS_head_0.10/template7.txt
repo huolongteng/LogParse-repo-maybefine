@@ -1,9 +1,0 @@
-74	INFO dfs.DataNode$DataXceiver: Served block to
-75	INFO dfs.DataNode$DataXceiver: Served block to
-76	INFO dfs.DataNode$DataXceiver: Served block to
-77	INFO dfs.DataNode$DataXceiver: Served block to
-80	INFO dfs.DataNode$DataXceiver: Served block to
-83	INFO dfs.DataNode$DataXceiver: Served block to
-87	INFO dfs.DataNode$DataXceiver: Served block to
-90	INFO dfs.DataNode$DataXceiver: Served block to
-97	INFO dfs.DataNode$DataXceiver: Served block to

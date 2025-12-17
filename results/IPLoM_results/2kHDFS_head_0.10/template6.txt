@@ -1,4 +1,0 @@
-29	INFO dfs.DataBlockScanner: Verification succeeded for
-70	INFO dfs.DataBlockScanner: Verification succeeded for
-176	INFO dfs.DataBlockScanner: Verification succeeded for
-197	INFO dfs.DataBlockScanner: Verification succeeded for
