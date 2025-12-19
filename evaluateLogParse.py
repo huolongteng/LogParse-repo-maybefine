@@ -129,8 +129,11 @@ def evaluateMethods(dataset, algorithm, leaf_num = 30, logname='rawlog.log', cho
         templates = os.path.join(template_path, "logTemplates.txt")
         fre_word_path = os.path.join(template_path, "output.fre")
         middle_templates = os.path.join(template_path, "output.template_middle")
+        # step-by-step：先准备脚本路径，再用当前python解释器调用，避免找不到可执行文件
+        ft_train_script = os.path.join(ALGORITHM_PATH, "ft_tree", "main_train.py")
         sub_args = [
-            os.path.join(ALGORITHM_PATH, "./ft_tree/main_train.py"),
+            sys.executable,
+            ft_train_script,
             "-train_log_path", log_path,
             "-out_seq_path", out_seq_path,
             "-templates", templates,
