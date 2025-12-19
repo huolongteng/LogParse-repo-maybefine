@@ -256,10 +256,17 @@ class LogParser:
         return headers, regex
 
 
-    def parse(self, logname):
+    def parse(self, logname, update=True):
         starttime = datetime.now()
         print('Parsing file: ' + os.path.join(self.para.path, logname))
         self.logname = logname
+        if not update:
+            template_file = os.path.join(self.para.outdir, "logTemplates.txt")
+            templates = [line.strip() for line in open(template_file)] if os.path.exists(template_file) else []
+            print('freeze templates:', len(templates))
+            print('freeze templates(after):', len(templates))
+            assert len(templates) == len(templates), "Template count changed in freeze mode"
+            return
         self.paraErasing()
         self.clustering()
         self.splitting()

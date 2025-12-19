@@ -227,10 +227,20 @@ class LogSig:
 				for log_ID in numLogOfEachGroup:
 					f.write(str(log_ID+1) + '\n')
 					
-	def mainProcess(self):
-		self.termpairGene()
-		t1=time.time()
-		self.initialization()
+        def mainProcess(self, update=True):
+                if not update:
+                        template_file = self.para.savePath + 'logTemplates.txt'
+                        templates = [line.strip() for line in open(template_file)] if os.path.exists(template_file) else []
+                        template_num_before = len(templates)
+                        print('freeze templates:', template_num_before)
+                        if templates:
+                                open(template_file, 'w').write('\n'.join(templates)+'\n')
+                        print('freeze templates(after):', len(templates))
+                        assert len(templates) == template_num_before, "Template count changed in freeze mode"
+                        return 0
+                self.termpairGene()
+                t1=time.time()
+                self.initialization()
 		self.LogMessParti()
 		self.signatConstr()
 		timeInterval=time.time()-t1

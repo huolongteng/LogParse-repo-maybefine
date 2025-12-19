@@ -31,16 +31,20 @@ class LogParser():
             if match(msg, template):
                 return " ".join(template.token)
 
-    def parse(self, log_file):
-        starttime = datetime.now() 
+    def parse(self, log_file, update=True):
+        starttime = datetime.now()
         loader = logloader.LogLoader(self.log_format, self.n_workers)
         log_dataframe = loader.load_to_dataframe(os.path.join(self.input_dir, log_file))
-        chrom_gen = ChromosomeGenerator(log_dataframe, self.rex)
-        pareto = main(chrom_gen)
-        for _, solution in pareto.items():
-            for _, templates in solution.templates.items():
-                self.templates.extend(templates)
-            break
+        template_num_before = len(self.templates)
+        if update or not self.templates:
+            chrom_gen = ChromosomeGenerator(log_dataframe, self.rex)
+            pareto = main(chrom_gen)
+            for _, solution in pareto.items():
+                for _, templates in solution.templates.items():
+                    self.templates.extend(templates)
+                break
+        else:
+            print('freeze templates:', template_num_before)
         log_dataframe['EventTemplate'] = log_dataframe['Content'].map(self.match_df)
         log_dataframe['EventId'] = log_dataframe['EventTemplate'].map(lambda x: hashlib.md5(x.encode('utf-8')).hexdigest()[0:8])
 
@@ -61,7 +65,14 @@ class LogParser():
             with open(os.path.join(self.output_dir, "template%d.txt"%template_index), "a") as f:
                 f.write(str(log_dataframe["LineId"][i])+"\n")
         open(os.path.join(self.output_dir, "logTemplates.txt"), "w").write("\n".join([k.replace('#spec#', '*') for k in df_event["EventTemplate"]])+"\n")
-        
+
+        # 冻结模式下模板数量保持不变
+        if not update:
+            print('freeze templates(after):', len(self.templates))
+            assert len(self.templates) == template_num_before, "Template count changed in freeze mode"
+        else:
+            template_num_before = len(self.templates)
+
         print('Parsing done. [Time taken: {!s}]'.format(datetime.now() - starttime))
         
 

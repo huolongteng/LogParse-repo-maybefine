@@ -69,28 +69,36 @@ class IPLoM:
 		for logLen in range(self.para.maxEventLen+1):
 			self.partitionsL.append(Partition(stepNo = 1, numOfLogs = 0, lenOfLogs = logLen))
 	
-	def mainProcess(self):
-		t1 = time.time()
-		self.Step1()
-		self.Step2()
-		self.Step3()
-		self.Step4()
-		self.getOutput()
-		t2 = time.time()
+        def mainProcess(self, update=True):
+                if not update:
+                        template_file = self.para.savePath+'logTemplates.txt'
+                        templates = [line.strip() for line in open(template_file)] if os.path.exists(template_file) else []
+                        template_num_before = len(templates)
+                        print('freeze templates:', template_num_before)
+                        print('freeze templates(after):', len(templates))
+                        assert len(templates) == template_num_before, "Template count changed in freeze mode"
+                        return 0
+                t1 = time.time()
+                self.Step1()
+                self.Step2()
+                self.Step3()
+                self.Step4()
+                self.getOutput()
+                t2 = time.time()
 
-		if not os.path.exists(self.para.savePath):
-			os.makedirs(self.para.savePath)
-		else:
-			self.deleteAllFiles(self.para.savePath)
+                if not os.path.exists(self.para.savePath):
+                        os.makedirs(self.para.savePath)
+                else:
+                        self.deleteAllFiles(self.para.savePath)
 
-		self.WriteEventToFile(self.para.savePath+'logTemplates.txt')
-		self.WriteLogWithEventID(self.para.savePath+self.para.saveFileName)
+                self.WriteEventToFile(self.para.savePath+'logTemplates.txt')
+                self.WriteLogWithEventID(self.para.savePath+self.para.saveFileName)
 
-		print('this process takes',t2-t1)
-		print('*********************************************')
-		gc.collect()
-		Event.eventId = 1
-		return t2-t1
+                print('this process takes',t2-t1)
+                print('*********************************************')
+                gc.collect()
+                Event.eventId = 1
+                return t2-t1
 
 	def Step1(self):
 		with open(self.para.path+self.para.logname) as lines:

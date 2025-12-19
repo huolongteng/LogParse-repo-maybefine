@@ -230,11 +230,41 @@ class LogParser:
             self.printTree(node.childD[child], dep + 1)
 
 
-    def parse(self, logname):
-        starttime = datetime.now()  
+    def parse(self, logname, update=True):
+        starttime = datetime.now()
         print('Parsing file: ' + os.path.join(self.path, logname))
-        self.logname = logname  
+        self.logname = logname
         self.load_data()
+        # freeze模式下，复用已有模板并保持数量不变
+        if not update:
+            template_file = os.path.join(self.savePath, "logTemplates.txt")
+            templates = [line.strip() for line in open(template_file)] if os.path.exists(template_file) else []
+            template_num_before = len(templates)
+            print('freeze templates:', template_num_before)
+            template_map = dict(zip([hashlib.md5(t.encode('utf-8')).hexdigest()[0:8] for t in templates], list(range(1, len(templates)+1))))
+            for i in glob(os.path.join(self.savePath, "template[0-9]*.txt")):
+                os.remove(i)
+            for idx, line in self.df_log.iterrows():
+                logID = line['LineId']
+                msg_tokens = list(filter(lambda x: x != '', re.split(r'[\s=:,]', self.preprocess(line['Content']))))
+                best_tpl = templates[0] if templates else 'NoMatch'
+                best_score = -1
+                for tpl in templates:
+                    tpl_tokens = tpl.split()
+                    score = sum(1 for a, b in zip(tpl_tokens, msg_tokens) if a == '*' or a == b)
+                    if score > best_score:
+                        best_score = score
+                        best_tpl = tpl
+                event_id = hashlib.md5(best_tpl.encode('utf-8')).hexdigest()[0:8]
+                template_index = template_map.get(event_id, 1)
+                with open(os.path.join(self.savePath, "template%d.txt"%template_index), "a") as f:
+                    f.write(str(logID)+"\n")
+            open(os.path.join(self.savePath, "logTemplates.txt"), "w").write("\n".join(templates)+"\n")
+            template_files = sorted(glob(os.path.join(self.savePath, "template[0-9]*.txt")))
+            print('freeze templates(after):', len(template_files))
+            assert len(template_files) == template_num_before, "Template count changed in freeze mode"
+            print('Parsing done. [Time taken: {!s}]'.format(datetime.now() - starttime))
+            return
         rootNode = Node()
         logCluL = []
 

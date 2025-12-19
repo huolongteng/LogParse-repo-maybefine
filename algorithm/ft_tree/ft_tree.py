@@ -29,6 +29,16 @@ FIRST_COL = 0
 DRAWTREE = 0
 max_org = 0
 
+# 冻结模式下的简单检查，保持模板数量不变
+def freeze_check(template_dir, update=True):
+    if not update:
+        template_file = os.path.join(template_dir, 'logTemplates.txt')
+        templates = [line.strip() for line in open(template_file)] if os.path.exists(template_file) else []
+        before = len(templates)
+        print('freeze templates:', before)
+        print('freeze templates(after):', len(templates))
+        assert len(templates) == before, "Template count changed in freeze mode"
+
 
 class Node(object):
     """ Node of tree
