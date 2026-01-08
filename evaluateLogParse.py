@@ -121,7 +121,8 @@ def evaluateMethods(dataset, algorithm, leaf_num = 30, logname='rawlog.log', cho
         fre_word_path = os.path.join(template_path, "output.fre")
         middle_templates = os.path.join(template_path, "output.template_middle")
         sub_args = [
-            os.path.join(ALGORITHM_PATH, "./ft_tree/main_train.py"),
+            sys.executable,  # 或者直接写 "python"
+            os.path.join(ALGORITHM_PATH, "ft_tree", "main_train.py"),
             "-train_log_path", log_path,
             "-out_seq_path", out_seq_path,
             "-templates", templates,
@@ -129,6 +130,7 @@ def evaluateMethods(dataset, algorithm, leaf_num = 30, logname='rawlog.log', cho
             "-middle_templates", middle_templates,
             "-short_threshold", "1",
         ]
+
         subprocess.run(sub_args, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         t2=time.time()
 

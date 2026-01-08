@@ -160,12 +160,8 @@ def logtim(trainData_path, logFile_path, rawLog_path, geneData_path, gtData_path
             if match_result:
                 match_results.append(match_result)
             else:
-                matcher.add_template(newTemplate(log_raw, clf, contextNum))
-                match_result = matchTemplate(log_raw, matcher)
-                assert match_result, log_raw
-                match_results.append(match_result)
-                # print("New template %d from log: %s" % (template_num, log.strip()))
-                # print("Template: %s" % template_map[str(template_num)])
+                match_results.append((0, ""))
+                continue
 
             gene_path = os.path.join(geneData_path, "template%d.txt"%match_results[-1][0])
             with open(gene_path, "a") as f:
